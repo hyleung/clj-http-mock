@@ -54,16 +54,6 @@
     (not-mocked? (http/get "http://bar.com:80/foo"))
     (not-mocked? (http/get "http://bar.com:443/foo"))))
 
-(deftest redirects
-  (mock/with-mock-routes
-    [(mock/route :get "http://foo.com/1") (redirect-response "http://foo.com/2")
-     (mock/route :get "http://foo.com/2") (redirect-response "http://foo.com/3")
-     (mock/route :get "http://foo.com/3") (ok-response "OK")]
-    (let [res (http/get "http://foo.com/1" {:follow-redirects true})]
-      (is (= 200 (:status res)))
-      (is (= ["http://foo.com/1" "http://foo.com/2" "http://foo.com/3"]
-             (:trace-redirects res))))))
-
 (deftest regex-in-query-params
   (mock/with-mock-routes
     [(mock/route :get "http://foo.com/" {:q #".*"}) (ok-response "Mocked")]
